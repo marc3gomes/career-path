@@ -8,6 +8,17 @@ resource "aws_s3_bucket" "career_path" {
   }
 }
 
+# Criação do Bucket S3 para Resultados do Athena
+resource "aws_s3_bucket" "athena_results" {
+  bucket = "athena-query-results-career-path"
+
+  tags = {
+    Name        = "Athena Query Results"
+    Environment = "Dev"
+  }
+}
+
+
 # Criação do Glue Database
 resource "aws_glue_catalog_database" "career_path_db" {
   name = "career_path_db"
