@@ -4,8 +4,8 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket = "terraform-state-career-path"  # O bucket onde o estado será armazenado
-    key    = "terraform/career_path_terraform.tfstate"  # Caminho dentro do bucket
+    bucket = "terraform-state-career-path"  # Nome do bucket S3 onde o estado será armazenado
+    key    = "terraform/career_path_terraform.tfstate"  # Caminho do arquivo de estado dentro do bucket
     region = "us-east-1"
     encrypt = true  # Criptografar o arquivo de estado no S3
   }
