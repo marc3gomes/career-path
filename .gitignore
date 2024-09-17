@@ -1,13 +1,32 @@
+# Diretório Terraform
 .terraform/
-terraform.tfstate
-terraform.tfstate.backup
+
+# Arquivos de estado do Terraform
 *.tfstate
-*.tfstate.*
-*.tfvars
-crash.log
+*.tfstate.backup
+
+# Planos de execução do Terraform
 *.tfplan
-.plan
 
+# Lockfile do Terraform State
+.terraform.lock.hcl
+
+# Logs de crash do Terraform
+crash.log
+
+# Override files do Terraform (arquivos locais de configuração que não devem ser versionados)
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Configurações de variáveis locais sensíveis (por exemplo, credenciais)
+terraform.tfvars
+*.tfvars
+
+# Arquivos de saída que podem conter informações sensíveis
+*.log
+
+# Arquivos que não precisam ser versionados (dependendo do ambiente)
 .DS_Store
-
-.vscode/
+*.swp

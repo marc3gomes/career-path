@@ -4,41 +4,34 @@ on:
   push:
     branches:
       - master
-  pull_request:
-    branches:
-      - master
 
 jobs:
   terraform:
     runs-on: ubuntu-latest
 
     steps:
-      # Passo 1: Fazer checkout do código
       - name: Checkout the code
         uses: actions/checkout@v2
 
-      # Passo 2: Configurar o Terraform CLI
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_wrapper: false
 
-      # Passo 3: Inicializar o Terraform
       - name: Terraform Init
         run: terraform init
-        working-directory: terraform
-
-      # Passo 4: Importar o bucket existente (se ele já existir)
-      - name: Import Existing S3 Bucket
-        run: terraform import aws_s3_bucket.career_path career-path-terraform-studies || echo "Bucket does not exist or already managed"
         working-directory: terraform
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      # Passo 5: Executar Terraform Destroy (para destruir o bucket existente)
-      - name: Terraform Destroy
-        run: terraform destroy -auto-approve
+      - name: Terraform Plan
+        run: terraform plan
+        working-directory: terraform
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
         working-directory: terraform
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
