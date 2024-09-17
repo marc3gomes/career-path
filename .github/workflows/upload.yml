@@ -21,22 +21,28 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
         with:
-          terraform_wrapper: false  # Desativa o wrapper, caso você precise do binário direto
+          terraform_wrapper: false
 
       # Passo 3: Inicializar o Terraform
       - name: Terraform Init
         run: terraform init
-        working-directory: terraform  # Aponta para o diretório onde o arquivo main.tf está
+        working-directory: terraform
 
-      # Passo 4: Executar Terraform Plan (opcional)
+      # Passo 4: Executar Terraform Plan
       - name: Terraform Plan
         run: terraform plan
         working-directory: terraform
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       # Passo 5: Executar Terraform Apply para criar o bucket
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: terraform
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       # Passo 6: Verificar se o bucket foi criado (opcional)
       - name: Verificar Bucket S3
