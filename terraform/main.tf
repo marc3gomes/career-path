@@ -30,7 +30,7 @@ resource "aws_glue_catalog_table" "career_path_table" {
   table_type    = "EXTERNAL_TABLE"
 
   storage_descriptor {
-    location      = "s3://${aws_s3_bucket.career_path.bucket}/data.json"  # O caminho do arquivo no S3
+    location      = "s3://${aws_s3_bucket.career_path.bucket}"  # O caminho do arquivo no S3
     input_format  = "org.apache.hadoop.mapred.TextInputFormat"
     output_format = "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat"
     compressed    = false
