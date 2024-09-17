@@ -3,10 +3,10 @@ name: Terraform Workflow
 on:
   push:
     branches:
-      - master  # Executa a pipeline quando há push para a branch main
+      - master  # Executa a pipeline quando há push para a branch master
   pull_request:
     branches:
-      - master  # Executa a pipeline em pull requests para a branch main
+      - master  # Executa a pipeline em pull requests para a branch master
 
 jobs:
   terraform:
