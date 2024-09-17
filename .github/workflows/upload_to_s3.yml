@@ -1,0 +1,29 @@
+name: Upload data.json to S3
+
+on:
+  push:
+    paths:
+      - 'data.json'  # Monitora alterações no arquivo data.json
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Passo 1: Fazer checkout do código
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Passo 2: Configurar o AWS CLI
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y awscli
+
+      # Passo 3: Fazer o upload do arquivo data.json para o S3
+      - name: Upload data.json to S3
+        run: |
+          aws s3 cp data.json s3://career-path-terraform-studies/data.json --region us-east-1
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
