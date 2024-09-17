@@ -1,21 +1,49 @@
-provider "aws" {
-  region = "us-east-1"
-}
-
-terraform {
-  backend "s3" {
-    bucket = "terraform-state-career-path"  # Nome do bucket S3 onde o estado será armazenado
-    key    = "terraform/career_path_terraform.tfstate"  # Caminho do arquivo de estado dentro do bucket
-    region = "us-east-1"
-    encrypt = true  # Criptografar o arquivo de estado no S3
-  }
-}
-
+# Criação do Bucket S3
 resource "aws_s3_bucket" "career_path" {
-  bucket = "career-path-terraform-studies"  # Certifique-se de que o nome do bucket é único
+  bucket = "career-path-terraform-studies"  # Nome do bucket S3
 
   tags = {
-    Name        = "My S3 Bucket"
+    Name        = "Career Path Data Bucket"
     Environment = "Dev"
   }
+}
+
+# Criação do Glue Database
+resource "aws_glue_catalog_database" "career_path_db" {
+  name = "career_path_db"
+}
+
+# Criação da Tabela no Glue sem a coluna children
+resource "aws_glue_catalog_table" "career_path_table" {
+  name          = "career_path_table"
+  database_name = aws_glue_catalog_database.career_path_db.name
+  table_type    = "EXTERNAL_TABLE"
+
+  storage_descriptor {
+    location      = "s3://${aws_s3_bucket.career_path.bucket}/data.json"  # O caminho do arquivo no S3
+    input_format  = "org.apache.hadoop.mapred.TextInputFormat"
+    output_format = "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat"
+    compressed    = false
+    number_of_buckets = -1
+
+    # Definição das colunas do JSON sem children
+    columns {
+      name = "title"
+      type = "string"
+    }
+
+    columns {
+      name = "experience"
+      type = "string"
+    }
+
+    ser_de_info {
+      name = "org.openx.data.jsonserde.JsonSerDe"
+      parameters = {
+        "serialization.format" = "1"
+      }
+    }
+  }
+
+  # Nenhum partition_key necessário
 }
