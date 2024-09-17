@@ -3,10 +3,10 @@ name: Terraform Workflow
 on:
   push:
     branches:
-      - master  # Executa a pipeline quando há push para a branch master
+      - master
   pull_request:
     branches:
-      - master  # Executa a pipeline em pull requests para a branch master
+      - master
 
 jobs:
   terraform:
@@ -36,7 +36,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      # Passo 5: Executar Terraform Apply para criar o bucket
+      # Passo 5: Executar Terraform Apply
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: terraform
@@ -44,9 +44,22 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      # Passo 6: Verificar se o bucket foi criado (opcional)
+      # Passo 6: Instalar o AWS CLI
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install awscli
+
+      # Passo 7: Configurar AWS CLI
+      - name: Configure AWS CLI
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set default.region us-east-1
+
+      # Passo 8: Verificar se o bucket foi criado com AWS CLI
       - name: Verificar Bucket S3
-        run: aws s3 ls
+        run: aws s3 ls --region us-east-1 --debug
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
