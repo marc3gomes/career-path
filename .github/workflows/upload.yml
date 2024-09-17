@@ -28,7 +28,15 @@ jobs:
         run: terraform init
         working-directory: terraform
 
-      # Passo 4: Executar Terraform Destroy (para destruir o bucket existente)
+      # Passo 4: Importar o bucket existente (se ele já existir)
+      - name: Import Existing S3 Bucket
+        run: terraform import aws_s3_bucket.career_path career-path-terraform-studies || echo "Bucket does not exist or already managed"
+        working-directory: terraform
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # Passo 5: Executar Terraform Destroy (para destruir o bucket existente)
       - name: Terraform Destroy
         run: terraform destroy -auto-approve
         working-directory: terraform
@@ -36,7 +44,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      # Passo 4: Executar Terraform Plan
+      # Passo 6: Executar Terraform Plan
       - name: Terraform Plan
         run: terraform plan
         working-directory: terraform
@@ -44,7 +52,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      # Passo 5: Executar Terraform Apply
+      # Passo 7: Executar Terraform Apply
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: terraform
@@ -52,20 +60,20 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      # Passo 6: Instalar o AWS CLI
+      # Passo 8: Instalar o AWS CLI
       - name: Install AWS CLI
         run: |
           sudo apt-get update
           sudo apt-get install awscli
 
-      # Passo 7: Configurar AWS CLI
+      # Passo 9: Configurar AWS CLI
       - name: Configure AWS CLI
         run: |
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws configure set default.region us-east-1
 
-      # Passo 8: Verificar se o bucket foi criado com AWS CLI
+      # Passo 10: Verificar se o bucket foi criado com AWS CLI
       - name: Verificar Bucket S3
         run: aws s3 ls --region us-east-1 --debug
         env:
