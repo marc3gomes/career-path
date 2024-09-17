@@ -1,6 +1,5 @@
 provider "aws" {
   region  = "us-east-1"
-  profile = "studies"  # Use o perfil que você configurou anteriormente
 }
 
 terraform {
