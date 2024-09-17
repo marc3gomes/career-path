@@ -18,22 +18,6 @@ resource "aws_s3_bucket" "athena_results" {
   }
 }
 
-# Configurar o Workgroup do Athena para usar o bucket criado
-resource "aws_athena_workgroup" "primary" {
-  name = "primary"  # Usar o workgroup padrão "primary"
-  state = "ENABLED"
-
-  configuration {
-    enforce_workgroup_configuration = true
-
-    result_configuration {
-      output_location = "s3://${aws_s3_bucket.athena_results.bucket}/"
-    }
-  }
-}
-
-
-
 # Criação do Glue Database
 resource "aws_glue_catalog_database" "career_path_db" {
   name = "career_path_db"
@@ -63,6 +47,11 @@ resource "aws_glue_catalog_table" "career_path_table" {
       type = "string"
     }
 
+    columns {
+      name = "children"
+      type = "array<struct<title:string,experience:string,children:array<struct<title:string,experience:string>>>>"
+    }
+
     ser_de_info {
       name = "org.openx.data.jsonserde.JsonSerDe"
       parameters = {
@@ -70,6 +59,4 @@ resource "aws_glue_catalog_table" "career_path_table" {
       }
     }
   }
-
-  # Nenhum partition_key necessário
 }
