@@ -18,6 +18,19 @@ resource "aws_s3_bucket" "athena_results" {
   }
 }
 
+resource "aws_athena_workgroup" "primary" {
+  name = "primary"  # Nome do workgroup padrão do Athena
+  state = "ENABLED"
+
+  configuration {
+    enforce_workgroup_configuration = true
+
+    result_configuration {
+      output_location = "s3://${aws_s3_bucket.athena_results.bucket}/"  # Bucket S3 para resultados
+    }
+  }
+}
+
 
 # Criação do Glue Database
 resource "aws_glue_catalog_database" "career_path_db" {
