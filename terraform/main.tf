@@ -23,7 +23,7 @@ resource "aws_glue_catalog_database" "career_path_db" {
   name = "career_path_db"
 }
 
-# Criação da Tabela no Glue sem a coluna children
+# Criação da Tabela no Glue com Dados Não-Aninhados
 resource "aws_glue_catalog_table" "career_path_table" {
   name          = "career_path_table"
   database_name = aws_glue_catalog_database.career_path_db.name
@@ -36,7 +36,7 @@ resource "aws_glue_catalog_table" "career_path_table" {
     compressed    = false
     number_of_buckets = -1
 
-    # Definição das colunas do JSON sem children
+    # Definição das colunas do JSON (dados não-aninhados)
     columns {
       name = "title"
       type = "string"
@@ -45,11 +45,6 @@ resource "aws_glue_catalog_table" "career_path_table" {
     columns {
       name = "experience"
       type = "string"
-    }
-
-    columns {
-      name = "children"
-      type = "array<struct<title:string,experience:string,children:array<struct<title:string,experience:string>>>>"
     }
 
     ser_de_info {
