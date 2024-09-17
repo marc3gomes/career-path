@@ -23,6 +23,12 @@ jobs:
         with:
           terraform_wrapper: false
 
+
+      # Passo 3: Inicializar o Terraform
+      - name: Terraform destroy
+        run: terraform destroy
+        working-directory: terraform
+
       # Passo 3: Inicializar o Terraform
       - name: Terraform Init
         run: terraform init
