@@ -1,78 +1,34 @@
-{
-  "title": "Intern",
-  "experience": "No Experience / Student",
-  "children": [
-    {
-      "title": "Junior Designer Test",
-      "experience": "1-5 years",
-      "children": [
-        {
-          "title": "Mid-level Designer",
-          "experience": "3-8 years",
-          "children": [
-            {
-              "title": "Senior Designer",
-              "experience": "5-15 years",
-              "children": [
-                {
-                  "title": "Specialist",
-                  "experience": "5-15 years",
-                  "children": [
-                    {
-                      "title": "Expert",
-                      "experience": "5-15 years"
-                    },
-                    {
-                      "title": "Principal",
-                      "experience": "5-15 years"
-                    }
-                  ]
-                },
-                {
-                  "title": "Lead",
-                  "experience": "5-15 years",
-                  "children": [
-                    {
-                      "title": "Senior Lead",
-                      "experience": "5-15 years"
-                    },
-                    {
-                      "title": "Expert Lead",
-                      "experience": "5-15 years"
-                    },
-                    {
-                      "title": "Principal Lead",
-                      "experience": "5-15 years"
-                    }
-                  ]
-                },
-                {
-                  "title": "Design Coordinator",
-                  "experience": "5-15 years",
-                  "children": [
-                    {
-                      "title": "Design Manager",
-                      "experience": "5-15 years"
-                    },
-                    {
-                      "title": "Senior Design Manager",
-                      "experience": "5-15 years"
-                    },
-                    {
-                      "title": "Design Director",
-                      "experience": "5-15 years"
-                    },
-                    {
-                      "title": "Head Of Design",
-                      "experience": "5-15 years"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
+[
+  {
+    "title": "Intern",
+    "experience": "No Experience / Student"
+  },
+  {
+    "title": "Junior Designer Test",
+    "experience": "1-5 years"
+  },
+  {
+    "title": "Mid-level Designer",
+    "experience": "3-8 years"
+  },
+  {
+    "title": "Senior Designer",
+    "experience": "5-15 years"
+  },
+  {
+    "title": "Specialist",
+    "experience": "5-15 years"
+  },
+  {
+    "title": "Expert",
+    "experience": "5-15 years"
+  },
+  {
+    "title": "Principal",
+    "experience": "5-15 years"
+  },
+  {
+    "title": "Lead",
+    "experience": "5-15 years"
+  }
+]
