@@ -34,13 +34,13 @@ resource "aws_glue_catalog_table" "career_path_table" {
   table_type    = "EXTERNAL_TABLE"
 
   storage_descriptor {
-    location      = "s3://${aws_s3_bucket.career_path.bucket}/data/"  # O caminho do arquivo no S3
+    location      = "s3://${aws_s3_bucket.career_path.bucket}/data/"  # Caminho para o diretório no S3
     input_format  = "org.apache.hadoop.mapred.TextInputFormat"
     output_format = "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat"
     compressed    = false
     number_of_buckets = -1
 
-    # Definição das colunas do JSON (dados não-aninhados)
+    # Definição das colunas do JSON
     columns {
       name = "title"
       type = "string"
@@ -59,3 +59,4 @@ resource "aws_glue_catalog_table" "career_path_table" {
     }
   }
 }
+
