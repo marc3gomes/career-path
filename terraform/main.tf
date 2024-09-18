@@ -20,6 +20,35 @@ resource "aws_s3_bucket" "athena_results" {
   }
 }
 
+# Política do bucket S3 para permitir que o Athena grave os resultados no S3
+resource "aws_s3_bucket_policy" "athena_results_policy" {
+  bucket = aws_s3_bucket.athena_results.bucket
+
+  policy = <<EOF
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": {
+          "Service": "athena.amazonaws.com"
+        },
+        "Action": [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:ListBucket"
+        ],
+        "Resource": [
+          "arn:aws:s3:::${aws_s3_bucket.athena_results.bucket}",
+          "arn:aws:s3:::${aws_s3_bucket.athena_results.bucket}/*"
+        ]
+      }
+    ]
+  }
+  EOF
+}
+
+
 # Política do bucket S3 para permitir acesso ao Glue e Athena
 resource "aws_s3_bucket_policy" "career_path_policy" {
   bucket = aws_s3_bucket.career_path.bucket
