@@ -1,9 +1,10 @@
 name: Upload data.json to S3
 
 on:
-  push:
-    paths:
-      - 'data.json'  # Monitora alterações no arquivo data.json
+  workflow_run:
+    workflows: ["Terraform Workflow"]
+    types:
+      - completed
 
 jobs:
   upload:
