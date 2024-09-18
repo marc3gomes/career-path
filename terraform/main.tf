@@ -238,7 +238,7 @@ resource "aws_iam_policy" "glue_crawler_policy" {
   EOF
 }
 
-# Anexando a política ao IAM Role do Glue
+# Anexando a política ao IAM Role do Glu
 resource "aws_iam_role_policy_attachment" "glue_crawler_policy_attach" {
   role       = aws_iam_role.glue_role.name
   policy_arn = aws_iam_policy.glue_crawler_policy.arn
