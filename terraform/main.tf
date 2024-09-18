@@ -10,7 +10,7 @@ resource "aws_s3_bucket" "career_path" {
   }
 }
 
-# Criação do Bucket S3 para Resultados do Athena
+# Criação do Bucket S3 para Resultados do Athenaa
 resource "aws_s3_bucket" "athena_results" {
   bucket = "athena-query-results-career-path"
 
