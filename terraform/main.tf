@@ -51,6 +51,34 @@ resource "aws_s3_bucket_policy" "career_path_policy" {
   EOF
 }
 
+# Política do bucket S3 para permitir que o Athena grave os resultados no S3
+resource "aws_s3_bucket_policy" "athena_results_policy" {
+  bucket = aws_s3_bucket.athena_results.bucket
+
+  policy = <<EOF
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": {
+          "Service": "athena.amazonaws.com"
+        },
+        "Action": [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:ListBucket"
+        ],
+        "Resource": [
+          "arn:aws:s3:::${aws_s3_bucket.athena_results.bucket}",
+          "arn:aws:s3:::${aws_s3_bucket.athena_results.bucket}/*"
+        ]
+      }
+    ]
+  }
+  EOF
+}
+
 # Criação do Glue Database
 resource "aws_glue_catalog_database" "career_path_db" {
   name = var.glue_database_name  # Usando a variável "glue_database_name"
@@ -99,9 +127,9 @@ resource "aws_iam_role" "glue_role" {
   }
 }
 
-# Política do IAM Role para acesso ao S3 para o Glue
+# Definindo a política do Glue para acesso ao S3
 resource "aws_iam_policy" "glue_s3_policy" {
-  name = "GlueS3AccessPolicy"
+  name = "GlueS3AccessPolicy"  # Nome da política do Glue
 
   policy = <<EOF
   {
@@ -149,9 +177,9 @@ resource "aws_iam_role" "athena_role" {
   }
 }
 
-# Política do IAM Role para acesso ao S3 para o Athena
+# Definindo a política do Athena para acesso ao S3
 resource "aws_iam_policy" "athena_s3_policy" {
-  name = "AthenaS3AccessPolicy"
+  name = "AthenaS3AccessPolicy"  # Nome da política do Athena
 
   policy = <<EOF
   {
