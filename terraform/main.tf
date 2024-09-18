@@ -1,6 +1,6 @@
 # Criação do Bucket S3
 resource "aws_s3_bucket" "career_path" {
-  bucket = "career-path-terraform-studies"  # Nome do bucket S3#
+  bucket = "career-path-terraform-studies"  # Nome do bucket S3
 
   force_destroy = true
 
@@ -34,13 +34,12 @@ resource "aws_glue_catalog_table" "career_path_table" {
   table_type    = "EXTERNAL_TABLE"
 
   storage_descriptor {
-    location      = "s3://${aws_s3_bucket.career_path.bucket}/data/"  # Caminho para o diretório no S3
+    location      = "s3://${aws_s3_bucket.career_path.bucket}/data/"  # Diretório no S3 que contém arquivos Parquet
     input_format  = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat"
     output_format = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat"
-    compressed    = false
-    number_of_buckets = -1
+    compressed    = false  # Ajustar para 'true' se o arquivo Parquet estiver comprimido
 
-    # Definição das colunas do parquet
+    # Definição das colunas do Parquet
     columns {
       name = "title"
       type = "string"
@@ -56,4 +55,3 @@ resource "aws_glue_catalog_table" "career_path_table" {
     }
   }
 }
-
