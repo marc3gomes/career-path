@@ -52,10 +52,7 @@ resource "aws_glue_catalog_table" "career_path_table" {
     }
 
     ser_de_info {
-      name = "org.openx.data.jsonserde.JsonSerDe"
-      parameters = {
-        "serialization.format" = "1"
-      }
+      name = "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
     }
   }
 }
