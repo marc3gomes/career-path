@@ -1,6 +1,6 @@
 # Criação do Bucket S3 para armazenar os dados Parquet
 resource "aws_s3_bucket" "career_path" {
-  bucket = "career-path-terraform-studies"
+  bucket = var.bucket_name  # Usando a variável "bucket_name"
   force_destroy = true
 
   tags = {
@@ -38,7 +38,8 @@ resource "aws_s3_bucket_policy" "career_path_policy" {
         },
         "Action": [
           "s3:GetObject",
-          "s3:ListBucket"
+          "s3:ListBucket",
+          "s3:PutObject"
         ],
         "Resource": [
           "arn:aws:s3:::${aws_s3_bucket.career_path.bucket}",
@@ -50,44 +51,16 @@ resource "aws_s3_bucket_policy" "career_path_policy" {
   EOF
 }
 
-# Política do bucket S3 para permitir que o Athena grave os resultados no S3
-resource "aws_s3_bucket_policy" "athena_results_policy" {
-  bucket = aws_s3_bucket.athena_results.bucket
-
-  policy = <<EOF
-  {
-    "Version": "2012-10-17",
-    "Statement": [
-      {
-        "Effect": "Allow",
-        "Principal": {
-          "Service": "athena.amazonaws.com"
-        },
-        "Action": [
-          "s3:PutObject",
-          "s3:GetObject",
-          "s3:ListBucket"
-        ],
-        "Resource": [
-          "arn:aws:s3:::${aws_s3_bucket.athena_results.bucket}",
-          "arn:aws:s3:::${aws_s3_bucket.athena_results.bucket}/*"
-        ]
-      }
-    ]
-  }
-  EOF
-}
-
 # Criação do Glue Database
 resource "aws_glue_catalog_database" "career_path_db" {
-  name = "career_path_db"
+  name = var.glue_database_name  # Usando a variável "glue_database_name"
 }
 
 # Criação do Glue Crawler para detectar automaticamente o esquema e criar a tabela
 resource "aws_glue_crawler" "career_path_crawler" {
   name          = "career-path-crawler"
   role          = aws_iam_role.glue_role.arn
-  database_name = aws_glue_catalog_database.career_path_db.name
+  database_name = var.glue_database_name  # Usando a variável "glue_database_name"
 
   s3_target {
     path = "s3://${aws_s3_bucket.career_path.bucket}/data/"
@@ -124,10 +97,9 @@ resource "aws_iam_role" "glue_role" {
       }
     ]
   }
-  EOF
 }
 
-# Política do IAM Role para acesso ao S3
+# Política do IAM Role para acesso ao S3 para o Glue
 resource "aws_iam_policy" "glue_s3_policy" {
   name = "GlueS3AccessPolicy"
 
@@ -139,7 +111,8 @@ resource "aws_iam_policy" "glue_s3_policy" {
         "Effect": "Allow",
         "Action": [
           "s3:GetObject",
-          "s3:ListBucket"
+          "s3:ListBucket",
+          "s3:PutObject"
         ],
         "Resource": [
           "arn:aws:s3:::${aws_s3_bucket.career_path.bucket}",
@@ -188,11 +161,12 @@ resource "aws_iam_policy" "athena_s3_policy" {
         "Effect": "Allow",
         "Action": [
           "s3:GetObject",
-          "s3:ListBucket"
+          "s3:ListBucket",
+          "s3:PutObject"
         ],
         "Resource": [
-          "arn:aws:s3:::${aws_s3_bucket.career_path.bucket}",
-          "arn:aws:s3:::${aws_s3_bucket.career_path.bucket}/*"
+          "arn:aws:s3:::${aws_s3_bucket.athena_results.bucket}",
+          "arn:aws:s3:::${aws_s3_bucket.athena_results.bucket}/*"
         ]
       }
     ]
@@ -227,8 +201,8 @@ resource "aws_iam_policy" "glue_crawler_policy" {
         ],
         "Resource": [
           "arn:aws:glue:*:*:catalog",
-          "arn:aws:glue:*:*:database/${aws_glue_catalog_database.career_path_db.name}",
-          "arn:aws:glue:*:*:table/${aws_glue_catalog_database.career_path_db.name}/*"
+          "arn:aws:glue:*:*:database/${var.glue_database_name}",
+          "arn:aws:glue:*:*:table/${var.glue_database_name}/*"
         ]
       }
     ]
