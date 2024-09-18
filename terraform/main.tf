@@ -2,6 +2,8 @@
 resource "aws_s3_bucket" "career_path" {
   bucket = "career-path-terraform-studies"  # Nome do bucket S3
 
+  force_destroy = true
+
   tags = {
     Name        = "Career Path Data Bucket"
     Environment = "Dev"
@@ -11,6 +13,8 @@ resource "aws_s3_bucket" "career_path" {
 # Criação do Bucket S3 para Resultados do Athena
 resource "aws_s3_bucket" "athena_results" {
   bucket = "athena-query-results-career-path"
+
+  force_destroy = true
 
   tags = {
     Name        = "Athena Query Results"
