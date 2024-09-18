@@ -40,7 +40,7 @@ resource "aws_glue_catalog_table" "career_path_table" {
     compressed    = false
     number_of_buckets = -1
 
-    # Definição das colunas do JSON
+    # Definição das colunas do parquet
     columns {
       name = "title"
       type = "string"
