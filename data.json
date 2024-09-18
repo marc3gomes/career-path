@@ -1,4 +1,34 @@
-{
-  "title": "Interno",
-  "experience": "No Experience / Student"
-}
+[
+  {
+    "title": "Interno",
+    "experience": "No Experience / Student"
+  },
+  {
+    "title": "Junior Designer Test",
+    "experience": "1-5 years"
+  },
+  {
+    "title": "Mid-level Designer",
+    "experience": "3-8 years"
+  },
+  {
+    "title": "Senior Designer",
+    "experience": "5-15 years"
+  },
+  {
+    "title": "Specialist",
+    "experience": "5-15 years"
+  },
+  {
+    "title": "Expert",
+    "experience": "5-15 years"
+  },
+  {
+    "title": "Principal",
+    "experience": "5-15 years"
+  },
+  {
+    "title": "Lead",
+    "experience": "5-15 years"
+  }
+]
