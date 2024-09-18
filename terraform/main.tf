@@ -10,48 +10,25 @@ resource "aws_s3_bucket" "career_path" {
   }
 }
 
-# Criação do Bucket S3 para Resultados do Athena
-resource "aws_s3_bucket" "athena_results" {
-  bucket = "athena-query-results-career-path"
-
-  force_destroy = true
-
-  tags = {
-    Name        = "Athena Query Results"
-    Environment = "Dev"
-  }
-}
-
 # Criação do Glue Database
 resource "aws_glue_catalog_database" "career_path_db" {
   name = "career_path_db"
 }
 
-# Criação da Tabela no Glue com Dados Não-Aninhados
-resource "aws_glue_catalog_table" "career_path_table" {
-  name          = "career_path_table"
+# Criação do Glue Crawler para detectar automaticamente o esquema e criar a tabela
+resource "aws_glue_crawler" "career_path_crawler" {
+  name          = "career-path-crawler"
+  role          = "arn:aws:iam::<your-aws-account-id>:role/GlueServiceRole"  # Substitua pelo ARN do IAM Role existente
   database_name = aws_glue_catalog_database.career_path_db.name
-  table_type    = "EXTERNAL_TABLE"
 
-  storage_descriptor {
-    location      = "s3://${aws_s3_bucket.career_path.bucket}/data/"  # Diretório no S3 que contém arquivos Parquet
-    input_format  = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat"
-    output_format = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat"
-    compressed    = false  # Ajustar para 'true' se o arquivo Parquet estiver comprimido
-
-    # Definição das colunas do Parquet
-    columns {
-      name = "title"
-      type = "string"
-    }
-
-    columns {
-      name = "experience"
-      type = "string"
-    }
-
-    ser_de_info {
-      name = "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
-    }
+  s3_target {
+    path = "s3://${aws_s3_bucket.career_path.bucket}/data/"  # Diretório S3 com os dados
   }
+
+  configuration = jsonencode({
+    "Version" : 1.0,
+    "Grouping": {
+      "TableGroupingPolicy": "CombineCompatibleSchemas"
+    }
+  })
 }
