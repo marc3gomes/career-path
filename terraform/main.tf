@@ -37,7 +37,7 @@ resource "aws_s3_bucket_policy" "athena_results_policy" {
           "s3:GetObject",
           "s3:PutObject",
           "s3:ListBucket",
-          "s3:GetBucketLocation"
+          "s3:GetBucketLocation"  # Adicionado
         ],
         "Resource": [
           "arn:aws:s3:::${aws_s3_bucket.athena_results.bucket}",
@@ -48,6 +48,7 @@ resource "aws_s3_bucket_policy" "athena_results_policy" {
   }
   EOF
 }
+
 
 # Política inline do IAM Role da Lambda para acessar o Athena e o S3 (resultados)
 resource "aws_iam_role_policy" "lambda_athena_results_policy" {
@@ -291,17 +292,18 @@ resource "aws_iam_role_policy" "lambda_policy" {
           "athena:GetQueryResults",
           "s3:GetObject",
           "s3:ListBucket",
-          "s3:GetBucketLocation",
+          "s3:GetBucketLocation",  # Adicionado
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
           "logs:PutLogEvents"
         ],
         "Resource": "*"
-      
+      }
     ]
   }
   EOF
 }
+
 
 
 # Criação da função Lambda em Python
