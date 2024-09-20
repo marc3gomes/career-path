@@ -37,7 +37,7 @@ resource "aws_s3_bucket_policy" "athena_results_policy" {
           "s3:GetObject",
           "s3:PutObject",
           "s3:ListBucket",
-          "s3:GetBucketLocation"  # Adicionado
+          "s3:GetBucketLocation"
         ],
         "Resource": [
           "arn:aws:s3:::${aws_s3_bucket.athena_results.bucket}",
