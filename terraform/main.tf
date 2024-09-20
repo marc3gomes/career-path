@@ -62,7 +62,8 @@ resource "aws_iam_role_policy" "lambda_athena_results_policy" {
         "Action": [
           "s3:GetObject",
           "s3:PutObject",
-          "s3:ListBucket"
+          "s3:ListBucket",
+          "s3:GetBucketLocation"
         ],
         "Resource": [
           "arn:aws:s3:::${aws_s3_bucket.athena_results.bucket}",
