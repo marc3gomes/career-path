@@ -195,3 +195,82 @@ resource "aws_iam_role_policy" "glue_crawler_policy" {
   }
   EOF
 }
+
+# Criação do IAM Role para a Lambda
+resource "aws_iam_role" "lambda_role" {
+  name = "lambda-execute-athena-role"
+
+  assume_role_policy = <<EOF
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": {
+          "Service": "lambda.amazonaws.com"
+        },
+        "Action": "sts:AssumeRole"
+      }
+    ]
+  }
+  EOF
+}
+
+# Política inline do IAM Role da Lambda para acessar o Athena e o S3
+resource "aws_iam_role_policy" "lambda_policy" {
+  name = "LambdaAthenaS3AccessPolicy"
+  role = aws_iam_role.lambda_role.id
+
+  policy = <<EOF
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "athena:StartQueryExecution",
+          "athena:GetQueryExecution",
+          "athena:GetQueryResults",
+          "s3:GetObject",
+          "s3:ListBucket",
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        "Resource": "*"
+      }
+    ]
+  }
+  EOF
+}
+
+
+# Criação da função Lambda em Python
+resource "aws_lambda_function" "athena_query_function" {
+  function_name = "athena-query-lambda"
+  role          = aws_iam_role.lambda_role.arn
+  handler       = "lambda_function.handler"   # handler no formato Python: arquivo.funcao
+  runtime       = "python3.9"                 # Definindo Python como runtime
+  timeout       = 10
+
+  # Código da Lambda que consulta o Athena
+  source_code_hash = filebase64sha256("lambda_function.zip")
+
+  filename = "lambda_function.zip"  # O arquivo zip que contém lambda_function.py
+
+  environment {
+    variables = {
+      ATHENA_DATABASE = aws_glue_catalog_database.career_path_db.name
+      ATHENA_OUTPUT   = "s3://${aws_s3_bucket.athena_results.bucket}/"
+    }
+  }
+}
+
+
+# Criação da permissão para a Lambda ser executada por API Gateway
+resource "aws_lambda_permission" "api_gateway_invoke" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.athena_query_function.function_name
+  principal     = "apigateway.amazonaws.com"
+}
