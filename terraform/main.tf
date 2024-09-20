@@ -253,7 +253,7 @@ resource "aws_lambda_function" "athena_query_function" {
   runtime       = "python3.9"                 # Definindo Python como runtime
   timeout       = 10
 
-  # Código da Lambda que consulta o Athena
+  # Código da Lambda que consulta o Athenaa
   source_code_hash = filebase64sha256("lambda_function.zip")
 
   filename = "lambda_function.zip"  # O arquivo zip que contém lambda_function.py
