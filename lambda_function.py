@@ -9,8 +9,13 @@ def handler(event, context):
     database = os.environ['ATHENA_DATABASE']
     output_location = os.environ['ATHENA_OUTPUT']
 
-    # Query SQL recebida do evento
-    query = event['query']
+    # Verificar se a chave 'query' está presente no evento
+    query = event.get('query')
+    if not query:
+        return {
+            'statusCode': 400,
+            'body': 'A consulta SQL ("query") não foi fornecida no corpo da requisição.'
+        }
 
     # Executando a consulta no Athena
     response = athena.start_query_execution(
