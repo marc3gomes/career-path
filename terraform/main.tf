@@ -20,65 +20,6 @@ resource "aws_s3_bucket" "athena_results" {
   }
 }
 
-# Política do bucket S3 para permitir que o Athena acesse e escreva resultados
-resource "aws_s3_bucket_policy" "athena_results_policy" {
-  bucket = aws_s3_bucket.athena_results.bucket
-
-  policy = <<EOF
-  {
-    "Version": "2012-10-17",
-    "Statement": [
-      {
-        "Effect": "Allow",
-        "Principal": {
-          "Service": "athena.amazonaws.com"
-        },
-        "Action": [
-          "s3:GetObject",
-          "s3:PutObject",
-          "s3:ListBucket",
-          "s3:GetBucketLocation"
-        ],
-        "Resource": [
-          "arn:aws:s3:::${aws_s3_bucket.athena_results.bucket}",
-          "arn:aws:s3:::${aws_s3_bucket.athena_results.bucket}/*"
-        ]
-      }
-    ]
-  }
-  EOF
-}
-
-
-# Política inline do IAM Role da Lambda para acessar o Athena e o S3 (resultados)
-resource "aws_iam_role_policy" "lambda_athena_results_policy" {
-  name = "LambdaAthenaResultsS3AccessPolicy"
-  role = aws_iam_role.lambda_role.id
-
-  policy = <<EOF
-  {
-    "Version": "2012-10-17",
-    "Statement": [
-      {
-        "Effect": "Allow",
-        "Action": [
-          "s3:GetObject",
-          "s3:PutObject",
-           "s3:PutObjectAcl",
-          "s3:ListBucket",
-          "s3:GetBucketLocation"
-        ],
-        "Resource": [
-          "arn:aws:s3:::${aws_s3_bucket.athena_results.bucket}",
-          "arn:aws:s3:::${aws_s3_bucket.athena_results.bucket}/*"
-        ]
-      }
-    ]
-  }
-  EOF
-}
-
-
 # Política do bucket S3 para permitir acesso ao Glue e Athena
 resource "aws_s3_bucket_policy" "career_path_policy" {
   bucket = aws_s3_bucket.career_path.bucket
@@ -292,13 +233,9 @@ resource "aws_iam_role_policy" "lambda_policy" {
           "athena:GetQueryResults",
           "s3:GetObject",
           "s3:ListBucket",
-          "s3:GetBucketLocation", 
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
-          "logs:PutLogEvents",
-          "glue:GetDatabase",
-          "glue:GetTable",
-          "glue:SearchTables"
+          "logs:PutLogEvents"
         ],
         "Resource": "*"
       }
@@ -308,14 +245,13 @@ resource "aws_iam_role_policy" "lambda_policy" {
 }
 
 
-
 # Criação da função Lambda em Python
 resource "aws_lambda_function" "athena_query_function" {
   function_name = "athena-query-lambda"
   role          = aws_iam_role.lambda_role.arn
   handler       = "lambda_function.handler"   # handler no formato Python: arquivo.funcao
   runtime       = "python3.9"                 # Definindo Python como runtime
-  timeout       = 300
+  timeout       = 10
 
   # Código da Lambda que consulta o Athenaa
   source_code_hash = filebase64sha256("../lambda_function.zip")
@@ -337,7 +273,6 @@ resource "aws_lambda_permission" "api_gateway_invoke" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.athena_query_function.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.athena_api.execution_arn}/*/*"
 }
 
 
@@ -364,14 +299,13 @@ resource "aws_api_gateway_method" "post_method" {
 
 # Integração do método com a Lambda
 resource "aws_api_gateway_integration" "lambda_integration" {
-  rest_api_id             = aws_api_gateway_rest_api.athena_api.id
-  resource_id             = aws_api_gateway_resource.athena_query_resource.id
-  http_method             = aws_api_gateway_method.post_method.http_method
+  rest_api_id = aws_api_gateway_rest_api.athena_api.id
+  resource_id = aws_api_gateway_resource.athena_query_resource.id
+  http_method = aws_api_gateway_method.post_method.http_method
   integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/${aws_lambda_function.athena_query_function.arn}/invocations"
+  type        = "AWS_PROXY"
+  uri         = aws_lambda_function.athena_query_function.invoke_arn
 }
-
 
 # Criação do método de resposta
 resource "aws_api_gateway_method_response" "method_response" {
