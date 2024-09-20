@@ -1,4 +1,4 @@
-name: Upload data.json to S3
+name: Upload data.parquet to S3
 
 on:
   workflow_run:
