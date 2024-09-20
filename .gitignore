@@ -14,6 +14,9 @@
 # Logs de crash do Terraform
 crash.log
 
+#Ambiente virtual Python
+venv
+
 # Override files do Terraform (arquivos locais de configuração que não devem ser versionados)
 override.tf
 override.tf.json
