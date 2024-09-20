@@ -251,7 +251,7 @@ resource "aws_lambda_function" "athena_query_function" {
   role          = aws_iam_role.lambda_role.arn
   handler       = "lambda_function.handler"   # handler no formato Python: arquivo.funcao
   runtime       = "python3.9"                 # Definindo Python como runtime
-  timeout       = 10
+  timeout       = 300
 
   # Código da Lambda que consulta o Athenaa
   source_code_hash = filebase64sha256("../lambda_function.zip")
