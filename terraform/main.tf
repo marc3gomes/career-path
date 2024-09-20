@@ -36,8 +36,7 @@ resource "aws_s3_bucket_policy" "athena_results_policy" {
         "Action": [
           "s3:GetObject",
           "s3:PutObject",
-          "s3:ListBucket",
-          "s3:GetBucketLocation"
+          "s3:ListBucket"
         ],
         "Resource": [
           "arn:aws:s3:::${aws_s3_bucket.athena_results.bucket}",
@@ -48,7 +47,6 @@ resource "aws_s3_bucket_policy" "athena_results_policy" {
   }
   EOF
 }
-
 
 # Política inline do IAM Role da Lambda para acessar o Athena e o S3 (resultados)
 resource "aws_iam_role_policy" "lambda_athena_results_policy" {
@@ -64,9 +62,7 @@ resource "aws_iam_role_policy" "lambda_athena_results_policy" {
         "Action": [
           "s3:GetObject",
           "s3:PutObject",
-           "s3:PutObjectAcl",
-          "s3:ListBucket",
-          "s3:GetBucketLocation"
+          "s3:ListBucket"
         ],
         "Resource": [
           "arn:aws:s3:::${aws_s3_bucket.athena_results.bucket}",
@@ -77,6 +73,7 @@ resource "aws_iam_role_policy" "lambda_athena_results_policy" {
   }
   EOF
 }
+
 
 # Política do bucket S3 para permitir acesso ao Glue e Athena
 resource "aws_s3_bucket_policy" "career_path_policy" {
@@ -293,10 +290,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
           "s3:ListBucket",
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
-          "logs:PutLogEvents",
-          "glue:GetDatabase",
-          "glue:GetTable",
-          "glue:SearchTables"
+          "logs:PutLogEvents"
         ],
         "Resource": "*"
       }
@@ -305,7 +299,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
   EOF
 }
 
-
+# Criação da função Lambda
 # Criação da função Lambda em Python
 resource "aws_lambda_function" "athena_query_function" {
   function_name = "athena-query-lambda"
@@ -314,7 +308,7 @@ resource "aws_lambda_function" "athena_query_function" {
   runtime       = "python3.9"                 # Definindo Python como runtime
   timeout       = 300
 
-  # Código da Lambda que consulta o Athenaa
+  # Código da Lambda que consulta o Athena
   source_code_hash = filebase64sha256("../lambda_function.zip")
 
   filename = "../lambda_function.zip"  # O arquivo zip que contém lambda_function.py
@@ -336,8 +330,7 @@ resource "aws_lambda_permission" "api_gateway_invoke" {
   principal     = "apigateway.amazonaws.com"
 }
 
-
-#Criação do API Gateway REST API
+# Criação do API Gateway REST API
 resource "aws_api_gateway_rest_api" "athena_api" {
   name        = "athena-query-api"
   description = "API Gateway para consultar dados via Lambda no Athena"
