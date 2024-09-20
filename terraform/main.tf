@@ -254,9 +254,9 @@ resource "aws_lambda_function" "athena_query_function" {
   timeout       = 10
 
   # Código da Lambda que consulta o Athenaa
-  source_code_hash = filebase64sha256("lambda_function.zip")
+  source_code_hash = filebase64sha256("../lambda_function.zip")
 
-  filename = "lambda_function.zip"  # O arquivo zip que contém lambda_function.py
+  filename = "../lambda_function.zip"  # O arquivo zip que contém lambda_function.py
 
   environment {
     variables = {
