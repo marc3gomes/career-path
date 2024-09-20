@@ -379,6 +379,10 @@ resource "aws_api_gateway_integration_response" "integration_response" {
   resource_id = aws_api_gateway_resource.athena_query_resource.id
   http_method = aws_api_gateway_method.post_method.http_method
   status_code = aws_api_gateway_method_response.method_response.status_code
+
+  depends_on = [
+    aws_api_gateway_integration.lambda_integration
+  ]
 }
 
 # Criação do deployment da API
