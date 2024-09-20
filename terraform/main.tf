@@ -235,7 +235,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
           "s3:ListBucket",
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
-          "logs:PutLogEvents"
+          "logs:PutLogEvents",
           "glue:GetDatabase",
           "glue:GetTable",
           "glue:SearchTables"
