@@ -274,3 +274,62 @@ resource "aws_lambda_permission" "api_gateway_invoke" {
   function_name = aws_lambda_function.athena_query_function.function_name
   principal     = "apigateway.amazonaws.com"
 }
+
+
+#Criação do API Gateway REST API
+resource "aws_api_gateway_rest_api" "athena_api" {
+  name        = "athena-query-api"
+  description = "API Gateway para consultar dados via Lambda no Athena"
+}
+
+# Criação do recurso para o método de requisição HTTP
+resource "aws_api_gateway_resource" "athena_query_resource" {
+  rest_api_id = aws_api_gateway_rest_api.athena_api.id
+  parent_id   = aws_api_gateway_rest_api.athena_api.root_resource_id
+  path_part   = "query"  # Define o caminho /query na URL
+}
+
+# Definir o método HTTP (POST) para a função Lambda
+resource "aws_api_gateway_method" "post_method" {
+  rest_api_id   = aws_api_gateway_rest_api.athena_api.id
+  resource_id   = aws_api_gateway_resource.athena_query_resource.id
+  http_method   = "POST"
+  authorization = "NONE"
+}
+
+# Integração do método com a Lambda
+resource "aws_api_gateway_integration" "lambda_integration" {
+  rest_api_id = aws_api_gateway_rest_api.athena_api.id
+  resource_id = aws_api_gateway_resource.athena_query_resource.id
+  http_method = aws_api_gateway_method.post_method.http_method
+  integration_http_method = "POST"
+  type        = "AWS_PROXY"
+  uri         = aws_lambda_function.athena_query_function.invoke_arn
+}
+
+# Criação do método de resposta
+resource "aws_api_gateway_method_response" "method_response" {
+  rest_api_id = aws_api_gateway_rest_api.athena_api.id
+  resource_id = aws_api_gateway_resource.athena_query_resource.id
+  http_method = aws_api_gateway_method.post_method.http_method
+  status_code = "200"
+}
+
+# Integração da resposta
+resource "aws_api_gateway_integration_response" "integration_response" {
+  rest_api_id = aws_api_gateway_rest_api.athena_api.id
+  resource_id = aws_api_gateway_resource.athena_query_resource.id
+  http_method = aws_api_gateway_method.post_method.http_method
+  status_code = aws_api_gateway_method_response.method_response.status_code
+}
+
+# Criação do deployment da API
+resource "aws_api_gateway_deployment" "api_deployment" {
+  rest_api_id = aws_api_gateway_rest_api.athena_api.id
+  stage_name  = "prod"
+
+  depends_on = [
+    aws_api_gateway_integration.lambda_integration,
+    aws_api_gateway_method_response.method_response
+  ]
+}
