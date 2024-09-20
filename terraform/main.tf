@@ -291,7 +291,6 @@ resource "aws_iam_role_policy" "lambda_policy" {
           "athena:GetQueryResults",
           "s3:GetObject",
           "s3:ListBucket",
-          "s3:GetBucketLocation",
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
           "logs:PutLogEvents",
