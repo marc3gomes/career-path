@@ -1,10 +1,13 @@
 import boto3
 import os
 import time
+import json
 
 athena = boto3.client('athena')
 
 def handler(event, context):
+    print("Evento recebido:", json.dumps(event))
+
     # Nome do banco de dados Athena e o local para salvar os resultados
     database = os.environ['ATHENA_DATABASE']
     output_location = os.environ['ATHENA_OUTPUT']
